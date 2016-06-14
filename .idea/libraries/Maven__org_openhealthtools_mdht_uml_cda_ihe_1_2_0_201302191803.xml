@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.openhealthtools.mdht.uml.cda:ihe:1.2.0.201302191803">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/openhealthtools/mdht/uml/cda/ihe/1.2.0.201302191803/ihe-1.2.0.201302191803.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/openhealthtools/mdht/uml/cda/ihe/1.2.0.201302191803/ihe-1.2.0.201302191803-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/openhealthtools/mdht/uml/cda/ihe/1.2.0.201302191803/ihe-1.2.0.201302191803-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
