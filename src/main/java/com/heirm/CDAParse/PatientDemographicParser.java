@@ -25,15 +25,6 @@ public class PatientDemographicParser {
   public ca.uhn.fhir.model.dstu2.resource.Patient parse(ca.uhn.fhir.model.dstu2.resource.Patient patientFHIR) {
 
     try {
-      /*
-      Move these to separate parsers later
-
-     Author author = rt.getAuthors().get(0);
-      DocumentationOf documentationOf = cd.getDocumentationOfs().get(0);
-      Custodian custodian= cd.getCustodian();
-      Participant1 participant = cd.getParticipants().get(0);
-     */
-
 
 
       org.openhealthtools.mdht.uml.cda.Patient patientCDA = rt.getPatientRole().getPatient();
@@ -76,9 +67,7 @@ public class PatientDemographicParser {
       } else {
         patientFHIR.setGender(AdministrativeGenderEnum.UNKNOWN);
       }
-
-
-      // Marital Status skipped. Epic sends non-standard values.
+     // Marital Status skipped. Epic sends non-standard values.
       CE mcode = patientCDA.getMaritalStatusCode();
       if (mcode != null) {
         CodingDt maritalStatusCoding = patientFHIR.getMaritalStatus().addCoding();
