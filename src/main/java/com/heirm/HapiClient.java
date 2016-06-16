@@ -41,49 +41,40 @@ public class HapiClient {
         ctx.newRestfulGenericClient("http://localhost:8080/hapi-fhir-jpaserver-example/baseDstu2/");
 
     // Load patient from xml CDA file into MDHT CDA object
-// TOGGLE between visit summary and pt summary
-String str = readFileAsString("c:/tmp/gwm-visit-20160208.xml");
-
-
-   // String str = readFileAsString("c:/tmp/gwm.xml");
+    // TOGGLE between visit summary and pt summary
+// String str = readFileAsString("c:/tmp/gwm-visit-20160208.xml");
+String str = readFileAsString("c:/tmp/gwm.xml");
 
     InputStream is = new ByteArrayInputStream(str.getBytes("UTF-8"));
 
-    //System.out.println("CCDA XML"+ccda_xml);
-
-    //Create a cdaParser
     CDAParser cdaParser = new CDAParser(is);
 
 
-
-
-
-    // Create patient resource FHIR object for new Patient
-    //Patient pt = new Patient();
-
-    // Get existing patient resource FHIR object( demographics )
+    // For existing patient, get FHIR resource( demographics )
+    // For now, comment out updates for testing to prevent multiple version in server.
     Patient pt = client.read().resource(Patient.class).withId("52").execute();
+    if ( pt == null || pt.isEmpty()) {
+      // Create patient resource FHIR object for new Patient
+       pt = new Patient();
+    }
 
-    String patient_logical_id =  pt.getId().getIdPart();
-    String patient_business_id 	= pt.getIdentifierFirstRep().getValue();
-
+    String patient_logical_id = pt.getId().getIdPart();
+    String patient_business_id = pt.getIdentifierFirstRep().getValue();
 
     List<MedicationStatement> meds = new ArrayList<MedicationStatement>();
     List<Condition> conditions = new ArrayList<Condition>();
     List<Observation> vitalSigns = new ArrayList<Observation>();
     List<DiagnosticReport> diagnosticReports = new ArrayList<DiagnosticReport>();
-
-
-   // For new pt, get demographics from source document
-    //pt = cdaParser.getDemographics(pt);
-    vitalSigns = cdaParser.getVitals(vitalSigns);
+  // TOGGLE - Only get vitals with Visit Summary
+ // vitalSigns = cdaParser.getVitals(vitalSigns);
 
     // For Epic Sutter Visit Summaries only. This section does not exist in TOC Summary
     // Assuming Vitals and Encounters have a 1 to 1 relationship, create new Encounter FHIR resource here
     // Vitals fed from machines, such as fit bits, will not have encounters.
     // Need to research how this is dealt with in FHIR
+
     // COMMENT OUT when not creating new Encounter. TO DO - Create EncounterParser
-/*Encounter encounter = new Encounter();
+/*  Encounter encounter = new Encounter();
     encounter.setPatient(new ResourceReferenceDt("Patient/52"));
     PeriodDt pd = new PeriodDt();
     pd.setStart(new DateTimeDt("2016-02-11T22:00:00Z"));
@@ -102,26 +93,12 @@ String str = readFileAsString("c:/tmp/gwm-visit-20160208.xml");
    }
 */
 
-
     meds = cdaParser.getMedications(meds);
     conditions = cdaParser.getProblems(conditions);
     diagnosticReports = cdaParser.getResults(diagnosticReports);
-
-
-   //Get all sections
-    HashMap record = new HashMap();
-
-    //record.put("medications", cdaParser.getMedications());
-    //record.put("results", cdaParser.getResults());
-
-    //  record.put("allergies", cdaParser.getAllergies());
-
-    //record.put("problems", cdaParser.getProblems());
-
     //TOGGLE OFF when processing pt summary
- //record.put("vitalsigns", cdaParser.getVitals());
+    //record.put("vitalsigns", cdaParser.getVitals());
 
-    //record.put("procedures", cdaParser.getProcedures());
 
 
     System.out.println("demographics patient business ID - " + patient_business_id);
@@ -144,19 +121,18 @@ String str = readFileAsString("c:/tmp/gwm-visit-20160208.xml");
     // This section is for processing an Epic Sutter pt ambulatory transition of care summary
     // Current Medications, Current Problems and all lab results are processed
 
-// current medications
+    // current medications
     for (MedicationStatement med : meds) {
 
       CodeableConceptDt ccdt = (CodeableConceptDt) med.getMedication();
-  //    System.out.println("medication1 code = " + ccdt.getCodingFirstRep().getCode());
-  //    System.out.println("medication1 status = " + med.getStatus());
+      System.out.println("medication1 code = " + ccdt.getCodingFirstRep().getCode());
+      System.out.println("medication1 status = " + med.getStatus());
 
     }
 
     // current problems ( medical conditions )
-    for (Condition cons : conditions){
-//      System.out
-//         .println("problems code = " + cons.getCode().getCodingFirstRep().getCode());
+    for (Condition cons : conditions) {
+ System.out.println("problems code = " + cons.getCode().getCodingFirstRep().getCode());
       cons.setPatient(new ResourceReferenceDt("Patient/" + patient_logical_id));
     /*
      try {
@@ -172,11 +148,11 @@ String str = readFileAsString("c:/tmp/gwm-visit-20160208.xml");
 
     }
 
-// lab results
+    // lab results
     for (DiagnosticReport diagrep : diagnosticReports) {
-  diagrep.setSubject(new ResourceReferenceDt("Patient/" + patient_logical_id));
-//      System.out.println("result name = " + diagrep.getCode().getCodingFirstRep().getDisplay());
-//      System.out.println("result date = " + diagrep.getEffective().toString());
+    diagrep.setSubject(new ResourceReferenceDt("Patient/" + patient_logical_id));
+System.out.println("result name = " + diagrep.getCode().getCodingFirstRep().getDisplay());
+System.out.println("result date = " + diagrep.getEffective().toString());
       /*
      try {
      MethodOutcome outcome = client
@@ -193,16 +169,17 @@ String str = readFileAsString("c:/tmp/gwm-visit-20160208.xml");
 
     // This section is for entering vital signs from  a pt visit summary.
     // Vitals entered as observations using proposed standards for vitals in DSTU 3.
-
+/*
     // First, create Vital Sign group observation
-Observation VitalSignSet = new Observation();
+    Observation VitalSignSet = new Observation();
     VitalSignSet.setSubject(new ResourceReferenceDt("Patient/" + patient_logical_id));
     VitalSignSet.setEncounter(new ResourceReferenceDt("Encounter/325"));
     VitalSignSet.setStatus(ObservationStatusEnum.FINAL);
-    VitalSignSet.setCategory(new CodeableConceptDt("http://hl7.org/fhir/observation-category","vital-signs"));
+    VitalSignSet.setCategory(
+        new CodeableConceptDt("http://hl7.org/fhir/observation-category", "vital-signs"));
     VitalSignSet.getCategory().setText("Vital Signs");
     VitalSignSet.getCategory().getCodingFirstRep().setDisplay("Vital Signs");
-    VitalSignSet.setCode(new CodeableConceptDt("http://loinc.org","8716-3"));
+    VitalSignSet.setCode(new CodeableConceptDt("http://loinc.org", "8716-3"));
     VitalSignSet.getCode().getCodingFirstRep().setDisplay("Vital signs");
     VitalSignSet.setEffective(new DateTimeDt("2016-02-11T22:10:00Z"));
 
@@ -219,7 +196,6 @@ Observation VitalSignSet = new Observation();
       vitalSign.getCategory().setText("Vital Signs");
       vitalSign.getCategory().getCodingFirstRep().setDisplay("Vital Signs");
 
-      // Snippets for creating / updating patients
 
       MethodOutcome outcome = new MethodOutcome();
       try {
@@ -239,36 +215,19 @@ Observation VitalSignSet = new Observation();
       // on the server so our update failed.
     }
 
+*/
+/*
+      // Update existing Patient
 
+      // If the server is a version aware server, we should now know the latest version
+      // of the resource
+      //  System.out.println("Version ID: " + pt.getId().getVersionIdPart());
+      // Now let's make a change to the resource
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Update existing Patient  #1
-
-
-    // If the server is a version aware server, we should now know the latest version
-    // of the resource
-    //  System.out.println("Version ID: " + pt.getId().getVersionIdPart());
-    // Now let's make a change to the resource
-
-
-
-    // Invoke the server update method - Because the resource has
-    // a version, it will be included in the request sent to
-    // the server
- /*   try {
+      // Invoke the server update method - Because the resource has
+      // a version, it will be included in the request sent to
+      // the server
+  try {
       MethodOutcome outcome = client
           .update()
           .resource(pt)
@@ -277,18 +236,10 @@ Observation VitalSignSet = new Observation();
       // If we get here, the latest version has changed
       // on the server so our update failed.
     }
-*/
 
+    */
 
-    // Random client bundle search
-    // Invoke the client
-    //    Bundle bundle = client.search().forResource(Patient.class)
-    //        .prettyPrint()
-    //        .encodedJson()
-    //        .execute();
-    //bundle.getEntries().get(0).getResource().getResourceName();
-    // System.out.println(bundle.getEntries().get(0).getResource().getResourceName());
-  }
+    }
 
   private static String readFileAsString(String filePath) throws IOException {
     StringBuffer fileData = new StringBuffer();

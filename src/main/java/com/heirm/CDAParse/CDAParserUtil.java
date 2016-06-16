@@ -9,9 +9,7 @@ import org.openhealthtools.mdht.uml.hl7.datatypes.CD;
 import org.openhealthtools.mdht.uml.hl7.datatypes.CE;
 import org.openhealthtools.mdht.uml.hl7.datatypes.IVL_TS;
 
-/**
- * Created by murrayg on 4/28/2016.
- */
+
 public class CDAParserUtil {
 
   /**
@@ -42,10 +40,8 @@ public class CDAParserUtil {
   }
 
   /**
-   * Takes a ANY object and checks if its a CD object or CE object and
+   * Takes object and checks if its a CD object or CE object and
    * returns a corresponding string of displayName
-   *
-   * TODO: Connect this to a terminlogy lookup service if no display name given by code given
    *
    * @param dt
    * @return String of the display name

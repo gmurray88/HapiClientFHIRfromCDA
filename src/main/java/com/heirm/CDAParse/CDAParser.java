@@ -39,8 +39,8 @@ import java.util.List;
 public class CDAParser {
 
   // TOGGLE between Pt Summary and Visit Summary
-// public TransitionOfCareAmbulatorySummary covs			= null; //for Mu2 C-CDA
-public ClinicalOfficeVisitSummary covs = null; //for Mu2 C-CDA
+public TransitionOfCareAmbulatorySummary covs			= null; //for Mu2 C-CDA
+ //public ClinicalOfficeVisitSummary covs = null; //for Mu2 C-CDA
   //Initialize the document variables
   ClinicalDocument cd = null;
   MedicationsSection medicationsSection = null;
@@ -54,8 +54,8 @@ public ClinicalOfficeVisitSummary covs = null; //for Mu2 C-CDA
   Section VitalSection = null;
 
   /**
-   * Constructor for the CDA Parser. Accepts an InputStream of a CDA document in either
-   * HITSP 32 (CCD) or HITSP 83 (CCDA) document
+   * Constructor for the CDA Parser. Input stream can be TransitionOfCareAmbulatorySummary or
+   * ClinicalOfficeVisitSummary
    *
    * @param cda_input
    */
@@ -70,22 +70,23 @@ public ClinicalOfficeVisitSummary covs = null; //for Mu2 C-CDA
 
       // TOGGLE between Pt Summary and Visit Summary
 
-/*
+
       cd = CDAUtil
           .loadAs(cda_input, Mu2consolPackage.eINSTANCE.getTransitionOfCareAmbulatorySummary(),
               result);
-   */
+  /*
       cd = CDAUtil
           .loadAs(cda_input, Mu2consolPackage.eINSTANCE.getClinicalOfficeVisitSummary(), result);
-
+*/
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (Exception e) {
       e.printStackTrace();
     }
+
     // TOGGLE between Pt Summary and Visit Summary
- covs = (ClinicalOfficeVisitSummary) cd;
-   // covs = (TransitionOfCareAmbulatorySummary)cd;
+ // covs = (ClinicalOfficeVisitSummary) cd;
+covs = (TransitionOfCareAmbulatorySummary)cd;
 covs.getDocumentationOfs().get(0).getServiceEvent().getEffectiveTime().getHigh().getValue();
     for (Section sec : covs.getAllSections()) {
       String r = sec.getClass().getName();
@@ -95,16 +96,12 @@ covs.getDocumentationOfs().get(0).getServiceEvent().getEffectiveTime().getHigh()
              }
     }
 
-
     medicationsSection = covs.getMedicationsSection();
     problemSection = covs.getProblemSection();
-    // allergySection = covs.getAllergiesSection();
     resultsSection = covs.getResultsSection();
-    // proceduresSection = covs.getProceduresSection();
+    // TO DO -Allergies and Procedures
 
   }
-
-
 
   /**
    * Get Medications from the CDA
@@ -115,16 +112,7 @@ covs.getDocumentationOfs().get(0).getServiceEvent().getEffectiveTime().getHigh()
     return (new MedicationParser(medicationsSection)).parse(medicationsFHIR);
   }
 
-  /**
-   * Get Allergies from the CDA
-   *
-   * @return ArrayList of parsed allergies
-   */
-  public ArrayList getAllergies() {
-    return (new AllergyParser(allergySection)).parse();
-  }
-
-  /**
+   /**
    * Get results section from the CDA
    *
    * @return ArrayList of parsed results
@@ -148,10 +136,6 @@ covs.getDocumentationOfs().get(0).getServiceEvent().getEffectiveTime().getHigh()
     return (new VitalSignParser(VitalSection)).parse(vitalSigns);
   }
 
-
-  public ArrayList getProcedures() {
-    return (new ProcedureParser(proceduresSection)).parse();
-  }
 
   /**
    * Get demographics from the CDA

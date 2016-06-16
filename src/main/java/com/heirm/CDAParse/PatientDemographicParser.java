@@ -110,9 +110,6 @@ public class PatientDemographicParser {
             ptAddress.setPostalCode(ad.getPostalCodes().get(0).getText());
         }
 
-
-
-
       /* get provider
       move to separate parser later
       String provider_last_name = "", provider_first_name =  "";

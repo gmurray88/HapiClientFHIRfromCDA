@@ -28,7 +28,6 @@ public class ProblemParser {
   }
 
   public List<Condition> parse(List<Condition> conditions){
-    ArrayList condList = new ArrayList<HashMap>();
 
     if(problemSection == null){
       System.out.println("There are no problems");
@@ -42,12 +41,10 @@ public class ProblemParser {
 
           if(obs instanceof ProblemObservation){
             Condition condition = new Condition();
-
-            HashMap cond = new HashMap<String, String>();
             ProblemObservation pobs = (ProblemObservation)obs;
 
 
-            //        patientFHIR.setBirthDate(new DateDt(patientCDA.getBirthTime().getValue()));
+            //   patientFHIR.setBirthDate(new DateDt(patientCDA.getBirthTime().getValue()));
             IVL_TS pTime = pobs.getEffectiveTime();
             IVXB_TS effTime = pTime.getLow();
             String shortDate =  StringUtils.left(effTime.getValue(), 8);
@@ -57,24 +54,11 @@ public class ProblemParser {
             condition.setCode(new CodeableConceptDt(((CD)pobs.getValues().get(0)).getCodeSystem(),((CD)pobs.getValues().get(0)).getCode()));
 
             //System.out.println(pobs.getCode());
-                //System.out.println(((CD)pobs.getProblemStatus().getValues().get(0)));
+            //System.out.println(((CD)pobs.getProblemStatus().getValues().get(0)));
             HashMap ts = CDAParserUtil.getTS(pTime);
-            //cond.put("code1", pobs.getCode().getCode());
-           // cond.put("name", problem_name);
-           // cond.put("status", problem_status);
-           // cond.put("ts", ts);
-           // cond.put("code", code);
-           // condList.add(cond);
-           conditions.add(condition);
+            conditions.add(condition);
           }
-          if(obs instanceof EpisodeObservation){
-            EpisodeObservation eobs = (EpisodeObservation)obs;
-            //E.g. clinical finding
-            //System.out.println("EPISODE "+eobs.getValues());
-          }
-
         }
-
       }
     }catch(Exception ex){
       System.out.println("Problem Parsing Exception:");

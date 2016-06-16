@@ -44,7 +44,6 @@ public class MedicationParser {
 
   public List<MedicationStatement> parse(List<MedicationStatement> medicationsFHIR) {
 
-
     if (this.medSection == null) {
       return null;
     }
@@ -52,7 +51,6 @@ public class MedicationParser {
     for (SubstanceAdministration sa : medSection.getSubstanceAdministrations()) {
 
       MedicationStatement medStatement = new MedicationStatement();
-      HashMap<String, Object> med = new HashMap<String, Object>();
       Consumable consumable = sa.getConsumable();
 
       ManufacturedProduct manufacturedProduct = consumable.getManufacturedProduct();
@@ -63,7 +61,6 @@ public class MedicationParser {
             medStatement.setMedication(
             new CodeableConceptDt("urn:oid" + mm_code.getCodeSystem(), mm_code.getCode()));
       }
-
 
       IVL_PQ dose = sa.getDoseQuantity();
 
@@ -79,52 +76,10 @@ public class MedicationParser {
               }
       }
 
-
-        //Time
-      /*
-        String period_unit = "";
-        HashMap ts = null;
-
-        for (SXCM_TS effectiveTime : sa.getEffectiveTimes()) {
-          //System.out.println(effectiveTime);
-          if (effectiveTime instanceof PIVL_TS) {
-            PIVL_TS periodTS = (PIVL_TS) effectiveTime;
-            period_unit +=
-                "" + periodTS.getPeriod().getValue() + " " + periodTS.getPeriod().getUnit();
-          }
-          if (effectiveTime instanceof IVL_TS) {
-            IVL_TS pTime = (IVL_TS) effectiveTime;
-            ts = CDAParserUtil.getTS(pTime);
-          }
-        }
-*/
-
-
-        //status
-        String status_code = sa.getStatusCode().getCode();
       medStatement.setStatus(MedicationStatementStatusEnum.ACTIVE);
-
-
- /*     for(Observation os : sa.getObservations()){
-
-        if(os instanceof ProblemObservation){
-          ProblemObservation pobs = (ProblemObservation)os;
-          String problem_name = ((CD)pobs.getValues().get(0)).getDisplayName();
-          //String problem_status = ((CD)pobs.getProblemStatus().getValues().get(0)).getDisplayName();
-          HashMap rcond = new HashMap();
-          rcond.put("name", problem_name);
-          HashMap ots = CDAParserUtil.getTS(pobs.getEffectiveTime());
-          rcond.put("ts", ots);
-          //rcond.put("status", problem_status);
-          related_conditions.add(rcond);
-        }
-      }
-
-      */
       medicationsFHIR.add(medStatement);
 
     }
-
     return medicationsFHIR;
   }
 }

@@ -4,20 +4,14 @@ import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
 import ca.uhn.fhir.model.dstu2.valueset.QuantityComparatorEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
-import org.openhealthtools.mdht.uml.cda.ClinicalDocument;
 import org.openhealthtools.mdht.uml.cda.Component4;
 import org.openhealthtools.mdht.uml.cda.Entry;
-
 import org.openhealthtools.mdht.uml.cda.Organizer;
 import org.openhealthtools.mdht.uml.cda.Section;
-import org.openhealthtools.mdht.uml.cda.consol.ResultOrganizer;
 import org.openhealthtools.mdht.uml.hl7.datatypes.CD;
 import org.openhealthtools.mdht.uml.hl7.datatypes.IVL_TS;
 import org.openhealthtools.mdht.uml.hl7.datatypes.PQ;
@@ -29,11 +23,8 @@ public class VitalSignParser {
     this.vitalSection = vitalSection;
   }
 
-
   public List<Observation> parse(List<Observation> vitalSignsFHIR){
-    ArrayList vitalList = new ArrayList<HashMap>();
-
-    try{
+     try{
       for( Entry e:vitalSection.getEntries()){
         Organizer k = e.getOrganizer();
         HashMap vmap = new HashMap<String, String>();
@@ -42,12 +33,8 @@ public class VitalSignParser {
           org.openhealthtools.mdht.uml.cda.Observation obs = x.getObservation();
           CD co = obs.getCode();
           String vital_name = co.getDisplayName();
-
           IVL_TS pTime = obs.getEffectiveTime();
           String tr = pTime.getValue();
-          HashMap ts = CDAParserUtil.getTS(pTime);
-          vmap.put("date", tr);
-          //					System.out.println(ts);
 
           if (vital_name!=null  && obs.getValues().size() > 0){
             PQ kl = (PQ) obs.getValues().get(0);
@@ -58,8 +45,10 @@ public class VitalSignParser {
                     .setCode(new CodeableConceptDt("urn:oid" + co.getCodeSystem(), co.getCode()));
             vitalSign.getCode().getCodingFirstRep()
                 .setDisplay(co.getDisplayName());
+
+            // Does not like this format -  20160208230700+0000  - which is used by Epic Sutter
+            // Use Zulu instead. Hardcode until helper method developed for conversion
             vitalSign.setEffective(new DateTimeDt("2016-02-11T22:10:00Z"));
-            // Does not like this format -  20160208230700+0000"
         //    vitalSign.setEffective(new DateTimeDt(pTime.getValue()));
             vitalSignsFHIR.add(vitalSign);
           }
@@ -68,13 +57,7 @@ public class VitalSignParser {
               .getDisplay());
           System.out.println("Vital Code - " + vitalSign.getCode().getCodingFirstRep()
               .getCode());
-
           System.out.println("");
-
-        }
-
-        if (vmap.size()>0){
-          vitalList.add(vmap);
 
         }
       }
@@ -82,11 +65,6 @@ public class VitalSignParser {
       System.out.println("Vitals Parsing Error");
       ex.printStackTrace();
     }
- //   System.out.println(vitalList);
-    //			Collections.sort(vitalList,new DateComparator());
- //   return vitalList;
     return vitalSignsFHIR;
-
   }
-
 }
