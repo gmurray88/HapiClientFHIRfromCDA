@@ -1,6 +1,7 @@
 package com.heirm;
 
 import ca.uhn.fhir.context.FhirContext;
+
 import ca.uhn.fhir.model.dstu2.composite.PeriodDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.resource.Condition;
@@ -13,7 +14,7 @@ import ca.uhn.fhir.model.dstu2.valueset.ObservationRelationshipTypeEnum;
 import ca.uhn.fhir.model.dstu2.valueset.ObservationStatusEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.PreconditionFailedException;
 import com.heirm.CDAParse.CDAParser;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
@@ -36,9 +37,9 @@ public class HapiClient {
 
   public static void main(String[] args) throws IOException {
     // Create a client (only needed once)
-    FhirContext ctx = new FhirContext();
+    FhirContext ctx = FhirContext.forDstu2();
     IGenericClient client =
-        ctx.newRestfulGenericClient("http://localhost:8080/hapi-fhir-jpaserver-example/baseDstu2/");
+        ctx.newRestfulGenericClient("http://localhost:8080/hapi-fhir-jpaserver/");
 
     // Load patient from xml CDA file into MDHT CDA object
     // TOGGLE between visit summary and pt summary
@@ -52,11 +53,11 @@ String str = readFileAsString("c:/tmp/gwm.xml");
 
     // For existing patient, get FHIR resource( demographics )
     // For now, comment out updates for testing to prevent multiple version in server.
-    Patient pt = client.read().resource(Patient.class).withId("52").execute();
-    if ( pt == null || pt.isEmpty()) {
+   // Patient pt = client.read().resource(Patient.class).withId("52").execute();
+   // if ( pt == null || pt.isEmpty()) {
       // Create patient resource FHIR object for new Patient
-       pt = new Patient();
-    }
+       Patient pt = new Patient();
+   // }
 
     String patient_logical_id = pt.getId().getIdPart();
     String patient_business_id = pt.getIdentifierFirstRep().getValue();

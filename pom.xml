@@ -8,16 +8,6 @@
     <artifactId>hapi-test-client</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <repositories>
-        <repository>
-            <id>oss-snapshots</id>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
 
     <dependencies>
     <dependency>
@@ -25,7 +15,13 @@
         <artifactId>hapi-fhir-base</artifactId>
         <version>3.5.0</version>
     </dependency>
-    <dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-client</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+
+        <dependency>
         <groupId>ca.uhn.hapi.fhir</groupId>
         <artifactId>hapi-fhir-structures-dstu2</artifactId>
         <version>3.5.0</version>
@@ -55,17 +51,17 @@
         <dependency>
             <groupId>org.openhealthtools.mdht.uml.cda</groupId>
             <artifactId>ihe</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.openhealthtools.mdht.uml.cda</groupId>
             <artifactId>hitsp</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
          <dependency>
             <groupId>org.openhealthtools.mdht.uml.cda</groupId>
             <artifactId>consol</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse</groupId>
@@ -80,32 +76,32 @@
         <dependency>
             <groupId>org.openhealthtools.mdht.uml</groupId>
             <artifactId>cda</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.openhealthtools.mdht.uml.hl7</groupId>
             <artifactId>rim</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.openhealthtools.mdht.uml.hl7</groupId>
             <artifactId>datatypes</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.openhealthtools.mdht.uml.cda</groupId>
             <artifactId>ccd</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.openhealthtools.mdht.uml.cda</groupId>
             <artifactId>cdt</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.openhealthtools.mdht.uml.cda</groupId>
             <artifactId>mu2consol</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.ocl</groupId>
@@ -115,12 +111,12 @@
         <dependency>
             <groupId>org.openhealthtools.mdht.uml.hl7</groupId>
             <artifactId>vocab</artifactId>
-            <version>1.2.0.201212201425</version>
+            <version>1.2.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.openhealthtools.mdht.emf</groupId>
             <artifactId>runtime</artifactId>
-            <version>1.0.0.201212201425</version>
+            <version>1.0.0.201302191803</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.emf.ecore</groupId>
@@ -151,6 +147,15 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
